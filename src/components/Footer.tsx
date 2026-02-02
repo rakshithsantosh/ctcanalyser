@@ -12,7 +12,7 @@ const Footer: React.FC = () => {
                 <div className="flex space-x-6">
                     <a href="#" className="text-slate-400 hover:text-indigo-600 transition-colors">Privacy</a>
                     <a href="#" className="text-slate-400 hover:text-indigo-600 transition-colors">About</a>
-                    <a href="#" className="text-slate-400 hover:text-indigo-600 transition-colors">Github</a>
+                    <a href="https://github.com/rakshithsantosh/ctcanalyser" target="_blank" className="text-slate-400 hover:text-indigo-600 transition-colors">Github</a>
                 </div>
 
                 <div className="mt-6 md:mt-0 text-slate-400 text-sm">
