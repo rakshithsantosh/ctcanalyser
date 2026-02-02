@@ -10,7 +10,7 @@ const Contact: React.FC = () => {
         const formData = new FormData(e.currentTarget);
 
         try {
-            const response = await fetch("https://formsubmit.co/ajax/rakshithsantosh@gmail.com", {
+            const response = await fetch("https://formsubmit.co/ajax/8199138fb6cf2bed7e826e805f5a377e", {
                 method: "POST",
                 body: formData,
                 headers: {
