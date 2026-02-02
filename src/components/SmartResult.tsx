@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { calculateTakeHome, calculateNewRegime, calculateOldRegime } from '../utils/taxCalculator';
-import type { SalaryInputs, TaxResult } from '../utils/taxCalculator';
+import type { SalaryInputs } from '../utils/taxCalculator';
 import { generateInsights } from '../utils/salaryInsights';
 import { Link } from 'react-router-dom';
 
@@ -50,13 +50,9 @@ const SmartResult: React.FC<SmartResultProps> = ({ ctc }) => {
     // For simplicity, we'll auto-balance 'Special Allowance' to match CTC if possible.
     // Gross Earnings = Basic + HRA + Special + Variable. (Ignoring Employer PF for simplicity in "Instant" view)
 
-    const calculatedGross = inputs.basic + inputs.hra + inputs.variable + inputs.special + inputs.otherAllowances;
-
     // Derived Calculations using simplified logic for display
     const inputsForCalc: SalaryInputs = {
-        ...inputs,
-        location: 'Metro',
-        regime: regime
+        ...inputs
     };
 
     // Calculate Tax for BOTH regimes to show comparison
