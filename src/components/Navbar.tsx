@@ -35,6 +35,9 @@ const Navbar: React.FC = () => {
                         <Link to="/about" className={`text-sm transition-colors duration-200 ${isActive('/about')}`}>
                             About
                         </Link>
+                        <Link to="/contact" className={`text-sm transition-colors duration-200 ${isActive('/contact')}`}>
+                            Contact
+                        </Link>
                         <Link to="/privacy" className={`text-sm transition-colors duration-200 ${isActive('/privacy')}`}>
                             Privacy
                         </Link>
@@ -45,6 +48,7 @@ const Navbar: React.FC = () => {
                         {/* We can add a mobile menu here later if needed, for now just keeping it simple */}
                         <div className="flex space-x-4">
                             <Link to="/about" className={`text-sm ${isActive('/about')}`}>About</Link>
+                            <Link to="/contact" className={`text-sm ${isActive('/contact')}`}>Contact</Link>
                             <Link to="/privacy" className={`text-sm ${isActive('/privacy')}`}>Privacy</Link>
                         </div>
                     </div>

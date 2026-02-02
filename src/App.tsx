@@ -5,6 +5,8 @@ import Home from './pages/Home';
 import DetailedBreakdown from './pages/DetailedBreakdown';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import About from './pages/About';
+import Contact from './pages/Contact';
+import Terms from './pages/Terms';
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
             <Route path="/breakdown" element={<DetailedBreakdown />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/terms" element={<Terms />} />
           </Routes>
         </div>
         <Footer />
