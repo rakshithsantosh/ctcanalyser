@@ -1,22 +1,24 @@
-import HeroSection from './components/HeroSection';
-import ProblemSection from './components/ProblemSection';
-import HowItWorks from './components/HowItWorks';
-import InsightPreview from './components/InsightPreview';
-import TrustSection from './components/TrustSection';
-import SalaryAnalyzer from './components/SalaryAnalyzer';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Footer from './components/Footer';
+import Home from './pages/Home';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import About from './pages/About';
 
 function App() {
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-indigo-100 selection:text-indigo-800">
-      <HeroSection />
-      <ProblemSection />
-      <HowItWorks />
-      <InsightPreview />
-      <TrustSection />
-      <SalaryAnalyzer />
-      <Footer />
-    </div>
+    <Router>
+      <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-indigo-100 selection:text-indigo-800 flex flex-col">
+        <div className="flex-grow">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/about" element={<About />} />
+          </Routes>
+        </div>
+        <Footer />
+      </div>
+    </Router>
   );
 }
 
