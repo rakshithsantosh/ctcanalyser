@@ -26,7 +26,9 @@ const HeroInput: React.FC<HeroInputProps> = ({ onCalculate }) => {
                 <div className="relative flex items-center bg-white rounded-2xl shadow-xl overflow-hidden p-2 ring-1 ring-slate-200 focus-within:ring-2 focus-within:ring-indigo-500 transition-shadow">
                     <span className="pl-6 text-2xl text-slate-400 font-medium">₹</span>
                     <input
-                        type="text" // Using text to handle commas if needed later, but standard number parsing works
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
                         value={ctc}
                         onChange={(e) => setCtc(e.target.value)}
                         placeholder="15,00,000"
@@ -36,7 +38,7 @@ const HeroInput: React.FC<HeroInputProps> = ({ onCalculate }) => {
                     <button
                         type="submit"
                         disabled={!ctc}
-                        className="hidden sm:block absolute right-3 px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
+                        className="hidden sm:block absolute right-3 px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 z-10"
                     >
                         Reveal Salary
                     </button>
@@ -44,7 +46,7 @@ const HeroInput: React.FC<HeroInputProps> = ({ onCalculate }) => {
                 <button
                     type="submit"
                     disabled={!ctc}
-                    className="sm:hidden w-full mt-4 px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all shadow-lg active:scale-95 disabled:opacity-50"
+                    className="sm:hidden w-full mt-4 px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all shadow-lg active:scale-95 disabled:opacity-50 relative z-10"
                 >
                     Reveal My Salary
                 </button>
