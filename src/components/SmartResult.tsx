@@ -30,6 +30,7 @@ const SmartResult: React.FC<SmartResultProps> = ({ ctc }) => {
     const [hasPF, setHasPF] = useState(true);
     const [hasVariable, setHasVariable] = useState(false);
     const [has80C, setHas80C] = useState(false);
+    const [showBreakdown, setShowBreakdown] = useState(false);
 
     // Advanced Edit Mode
     const [isEditing, setIsEditing] = useState(false);
@@ -60,7 +61,8 @@ const SmartResult: React.FC<SmartResultProps> = ({ ctc }) => {
     const oldRegimeResult = calculateOldRegime(inputsForCalc);
     const newRegimeResult = calculateNewRegime(grossForCalc);
 
-    const activeTax = regime === 'NEW' ? newRegimeResult.totalTax : oldRegimeResult.totalTax;
+    const activeResult = regime === 'NEW' ? newRegimeResult : oldRegimeResult;
+    const activeTax = activeResult.totalTax;
     const takeHome = calculateTakeHome(inputsForCalc, activeTax);
 
     const betterRegime = newRegimeResult.totalTax < oldRegimeResult.totalTax ? 'NEW' : 'OLD';
@@ -82,13 +84,22 @@ const SmartResult: React.FC<SmartResultProps> = ({ ctc }) => {
                     </h2>
 
                     {/* Insights / Regime Badge */}
-                    <div className="inline-flex items-center space-x-2 bg-slate-800 rounded-full px-4 py-1 mb-4">
-                        <span className="text-xs text-slate-400">{regime === 'NEW' ? 'New Regime' : 'Old Regime'}</span>
+                    <div className="flex justify-center gap-2 mb-4">
+                        <div className="inline-flex items-center space-x-2 bg-slate-800 rounded-full px-4 py-1">
+                            <span className="text-xs text-slate-400">Regime:</span>
+                            <span className={`text-xs font-bold ${regime === 'NEW' ? 'text-green-400' : 'text-blue-400'}`}>
+                                {regime === 'NEW' ? 'New (FY 25-26 Proposed)' : 'Old'}
+                            </span>
+                        </div>
                         {betterRegime !== regime && (
-                            <span className="text-xs text-yellow-400 font-bold">• Switch to {betterRegime} Save ₹{savings.toLocaleString('en-IN')}</span>
+                            <div className="inline-flex items-center space-x-2 bg-yellow-900/30 border border-yellow-700/50 rounded-full px-4 py-1">
+                                <span className="text-xs text-yellow-400 font-bold">• Switch to {betterRegime} Save ₹{savings.toLocaleString('en-IN')}</span>
+                            </div>
                         )}
-                        {betterRegime === regime && (
-                            <span className="text-xs text-green-400 font-bold">• Optimal Regime</span>
+                        {betterRegime === regime && savings > 0 && (
+                            <div className="inline-flex items-center space-x-2 bg-green-900/30 border border-green-700/50 rounded-full px-4 py-1">
+                                <span className="text-xs text-green-400 font-bold">• Optimal Regime Selected</span>
+                            </div>
                         )}
                     </div>
 
@@ -102,14 +113,23 @@ const SmartResult: React.FC<SmartResultProps> = ({ ctc }) => {
                 {/* Refinement Bar */}
                 <div className="p-4 bg-slate-50 border-b border-slate-200 overflow-x-auto">
                     <div className="flex space-x-3 items-center min-w-max px-2">
-                        <span className="text-xs font-bold text-slate-400 uppercase mr-2">Quick Refine:</span>
+                        {/* Regime Switcher Segmented Control */}
+                        <div className="bg-white border border-slate-300 rounded-full p-1 flex items-center mr-2">
+                            <button
+                                onClick={() => setRegime('NEW')}
+                                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${regime === 'NEW' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-500 hover:text-slate-900'}`}
+                            >
+                                New Regime
+                            </button>
+                            <button
+                                onClick={() => setRegime('OLD')}
+                                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${regime === 'OLD' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-500 hover:text-slate-900'}`}
+                            >
+                                Old Regime
+                            </button>
+                        </div>
 
-                        <button
-                            onClick={() => setRegime(r => r === 'NEW' ? 'OLD' : 'NEW')}
-                            className={`flex items-center space-x-2 px-4 py-2 rounded-full border text-sm font-medium transition-colors ${regime === 'NEW' ? 'bg-indigo-100 border-indigo-200 text-indigo-700' : 'bg-white border-slate-300 text-slate-600 hover:bg-slate-50'}`}
-                        >
-                            <span>Regime: {regime}</span>
-                        </button>
+                        <div className="h-6 w-px bg-slate-200 mx-2"></div>
 
                         <button
                             onClick={() => setHasRent(!hasRent)}
@@ -144,7 +164,7 @@ const SmartResult: React.FC<SmartResultProps> = ({ ctc }) => {
                             onClick={() => setIsEditing(!isEditing)}
                             className="flex items-center space-x-2 px-4 py-2 rounded-full border border-slate-300 text-slate-600 bg-white hover:bg-slate-50 text-sm font-medium ml-4 font-bold"
                         >
-                            <span>{isEditing ? 'Hide Details' : 'Edit Salary Structure'}</span>
+                            <span>{isEditing ? 'Hide Details' : 'Edit Structure'}</span>
                         </button>
                     </div>
                 </div>
@@ -240,6 +260,88 @@ const SmartResult: React.FC<SmartResultProps> = ({ ctc }) => {
                     </div>
                 )}
 
+                {/* Tax Breakdown Section */}
+                <div className="border-t border-slate-100">
+                    <button
+                        onClick={() => setShowBreakdown(!showBreakdown)}
+                        className="w-full p-4 flex justify-between items-center text-left hover:bg-slate-50 transition-colors"
+                    >
+                        <span className="text-sm font-bold text-slate-700 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 transform transition-transform ${showBreakdown ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                            Tax Calculation Breakdown
+                        </span>
+                        <span className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">
+                            {regime === 'NEW' ? 'FY 25-26 Proposed' : 'Old Regime'}
+                        </span>
+                    </button>
+
+                    {showBreakdown && (
+                        <div className="p-6 bg-slate-50/50 animate-in slide-in-from-top-2">
+                            <div className="space-y-4 max-w-2xl mx-auto">
+                                <div className="flex justify-between text-sm py-2 border-b border-dashed border-slate-200">
+                                    <span className="text-slate-500">Gross Earnings</span>
+                                    <span className="font-semibold text-slate-900">₹ {Math.round(grossForCalc).toLocaleString('en-IN')}</span>
+                                </div>
+
+                                {regime === 'NEW' ? (
+                                    <>
+                                        <div className="flex justify-between text-sm py-2 border-b border-dashed border-slate-200">
+                                            <span className="text-slate-500">Standard Deduction</span>
+                                            <span className="font-semibold text-green-600">- ₹ {activeResult.standardDeduction?.toLocaleString('en-IN') || '0'}</span>
+                                        </div>
+                                        <div className="flex justify-between text-base font-bold py-2 bg-slate-100 px-3 rounded">
+                                            <span className="text-slate-700">Taxable Income</span>
+                                            <span className="text-slate-900">₹ {Math.round(activeResult.taxableIncome).toLocaleString('en-IN')}</span>
+                                        </div>
+
+                                        <div className="mt-4">
+                                            <p className="text-xs font-bold text-slate-400 uppercase mb-2">Slab Breakdown</p>
+                                            {activeResult.breakdown?.map((slab, idx) => (
+                                                <div key={idx} className="flex justify-between text-xs py-1">
+                                                    <span className="text-slate-500">{slab.label} (@ {slab.rate})</span>
+                                                    <span className="font-medium text-slate-700">₹ {Math.round(slab.amount).toLocaleString('en-IN')}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        {activeResult.rebate && activeResult.rebate > 0 ? (
+                                            <div className="flex justify-between text-sm py-2 border-y border-dashed border-slate-200 mt-2 bg-green-50 px-2 rounded">
+                                                <span className="text-green-700 font-medium">Rebate u/s 87A</span>
+                                                <span className="font-bold text-green-700">- ₹ {Math.round(activeResult.rebate).toLocaleString('en-IN')}</span>
+                                            </div>
+                                        ) : null}
+                                    </>
+                                ) : (
+                                    <>
+                                        {/* Old Regime Summary - Simplified for now since we didn't add breakdown to Old Regime Calc yet */}
+                                        <div className="flex justify-between text-base font-bold py-2 bg-slate-100 px-3 rounded">
+                                            <span className="text-slate-700">Taxable Income</span>
+                                            <span className="text-slate-900">₹ {Math.round(activeResult.taxableIncome).toLocaleString('en-IN')}</span>
+                                        </div>
+                                        <p className="text-xs text-slate-500 mt-2 italic">Detailed breakdown view currently optimized for New Regime due to complex exemptions in Old Regime.</p>
+                                    </>
+                                )}
+
+                                <div className="flex justify-between text-sm py-1 mt-2">
+                                    <span className="text-slate-500">Health & Education Cess (4%)</span>
+                                    <span className="font-medium text-slate-900">₹ {Math.round(activeResult.cess).toLocaleString('en-IN')}</span>
+                                </div>
+
+                                <div className="flex justify-between text-lg font-extrabold py-3 border-t-2 border-slate-200 mt-2">
+                                    <span className="text-indigo-900">Net Tax Payable</span>
+                                    <span className="text-indigo-600">₹ {Math.round(activeResult.totalTax).toLocaleString('en-IN')}</span>
+                                </div>
+
+                                <p className="text-[10px] text-slate-400 text-center mt-6">
+                                    Disclaimer: Tax calculations are indicative and based on FY 2025-26 proposed rules / current laws. Please consult a qualified tax professional before filing.
+                                </p>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
                 {/* Insights Section */}
                 {insights.length > 0 && (
                     <div className="bg-slate-50 p-6 border-t border-slate-200">
@@ -256,8 +358,8 @@ const SmartResult: React.FC<SmartResultProps> = ({ ctc }) => {
                 )}
 
                 <div className="bg-slate-50 p-4 text-center border-t border-slate-200">
-                    <Link to="/breakdown" className="text-indigo-600 font-semibold hover:text-indigo-800 text-sm flex items-center justify-center">
-                        See detailed calculation logic <span className="ml-1">→</span>
+                    <Link to="/breakdown" className="text-indigo-600 font-semibold hover:text-indigo-800 text-sm flex items-center justify-center opacity-50">
+                        Full Breakdown Page <span className="ml-1">→</span>
                     </Link>
                 </div>
             </div>

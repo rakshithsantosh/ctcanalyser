@@ -18,6 +18,9 @@ export interface TaxResult {
     totalTax: number;
     inHandAnnual: number;
     inHandMonthly: number;
+    breakdown?: { label: string; amount: number; rate: string }[];
+    rebate?: number;
+    standardDeduction?: number;
 }
 
 // Tax Slabs FY 2024-25 (AY 2025-26)
@@ -26,28 +29,67 @@ export const calculateNewRegime = (income: number): TaxResult => {
     const standardDeduction = 75000;
     let taxable = Math.max(0, income - standardDeduction);
 
-    // Rebate u/s 87A (Income <= 7L is tax free)
-    // Note: If income is slightly above 7L, marginal relief applies, but for simplicity V1 usually standard.
-    // Actually, New Regime 87A rebate is up to 25,000 tax, which covers income up to 7L.
+    // Rebate u/s 87A (Limit increased to 60,000 in FY 25-26)
+    // This effectively makes taxable income up to 12L tax-free.
+    // (Calculation: 0-4L Nil, 4-8L @ 5% = 20k, 8-12L @ 10% = 40k. Total = 60k. Rebate covers full 60k).
 
     let tax = 0;
+    const breakdown: { label: string; amount: number; rate: string }[] = [];
 
-    if (taxable <= 300000) {
+    if (taxable <= 400000) {
         tax = 0;
-    } else if (taxable <= 700000) {
-        tax = (taxable - 300000) * 0.05;
-    } else if (taxable <= 1000000) {
-        tax = (400000 * 0.05) + (taxable - 700000) * 0.10;
+        breakdown.push({ label: '0 - 4L', amount: 0, rate: 'Nil' });
+    } else if (taxable <= 800000) {
+        const slabTax = (taxable - 400000) * 0.05;
+        tax = slabTax;
+        breakdown.push({ label: '0 - 4L', amount: 0, rate: 'Nil' });
+        breakdown.push({ label: '4L - 8L', amount: slabTax, rate: '5%' });
     } else if (taxable <= 1200000) {
-        tax = (400000 * 0.05) + (300000 * 0.10) + (taxable - 1000000) * 0.15;
-    } else if (taxable <= 1500000) {
-        tax = (400000 * 0.05) + (300000 * 0.10) + (200000 * 0.15) + (taxable - 1200000) * 0.20;
+        const slabTax = (400000 * 0.05) + (taxable - 800000) * 0.10;
+        tax = slabTax;
+        breakdown.push({ label: '0 - 4L', amount: 0, rate: 'Nil' });
+        breakdown.push({ label: '4L - 8L', amount: 400000 * 0.05, rate: '5%' });
+        breakdown.push({ label: '8L - 12L', amount: (taxable - 800000) * 0.10, rate: '10%' });
+    } else if (taxable <= 1600000) {
+        const slabTax = (400000 * 0.05) + (400000 * 0.10) + (taxable - 1200000) * 0.15;
+        tax = slabTax;
+        breakdown.push({ label: '0 - 4L', amount: 0, rate: 'Nil' });
+        breakdown.push({ label: '4L - 8L', amount: 20000, rate: '5%' });
+        breakdown.push({ label: '8L - 12L', amount: 40000, rate: '10%' });
+        breakdown.push({ label: '12L - 16L', amount: (taxable - 1200000) * 0.15, rate: '15%' });
+    } else if (taxable <= 2000000) {
+        const slabTax = (400000 * 0.05) + (400000 * 0.10) + (400000 * 0.15) + (taxable - 1600000) * 0.20;
+        tax = slabTax;
+        breakdown.push({ label: '0 - 4L', amount: 0, rate: 'Nil' });
+        breakdown.push({ label: '4L - 8L', amount: 20000, rate: '5%' });
+        breakdown.push({ label: '8L - 12L', amount: 40000, rate: '10%' });
+        breakdown.push({ label: '12L - 16L', amount: 60000, rate: '15%' });
+        breakdown.push({ label: '16L - 20L', amount: (taxable - 1600000) * 0.20, rate: '20%' });
+    } else if (taxable <= 2400000) {
+        const slabTax = (400000 * 0.05) + (400000 * 0.10) + (400000 * 0.15) + (400000 * 0.20) + (taxable - 2000000) * 0.25;
+        tax = slabTax;
+        breakdown.push({ label: '0 - 4L', amount: 0, rate: 'Nil' });
+        breakdown.push({ label: '4L - 8L', amount: 20000, rate: '5%' });
+        breakdown.push({ label: '8L - 12L', amount: 40000, rate: '10%' });
+        breakdown.push({ label: '12L - 16L', amount: 60000, rate: '15%' });
+        breakdown.push({ label: '16L - 20L', amount: 80000, rate: '20%' });
+        breakdown.push({ label: '20L - 24L', amount: (taxable - 2000000) * 0.25, rate: '25%' });
     } else {
-        tax = (400000 * 0.05) + (300000 * 0.10) + (200000 * 0.15) + (300000 * 0.20) + (taxable - 1500000) * 0.30;
+        const slabTax = (400000 * 0.05) + (400000 * 0.10) + (400000 * 0.15) + (400000 * 0.20) + (400000 * 0.25) + (taxable - 2400000) * 0.30;
+        tax = slabTax;
+        breakdown.push({ label: '0 - 4L', amount: 0, rate: 'Nil' });
+        breakdown.push({ label: '4L - 8L', amount: 20000, rate: '5%' });
+        breakdown.push({ label: '8L - 12L', amount: 40000, rate: '10%' });
+        breakdown.push({ label: '12L - 16L', amount: 60000, rate: '15%' });
+        breakdown.push({ label: '16L - 20L', amount: 80000, rate: '20%' });
+        breakdown.push({ label: '20L - 24L', amount: 100000, rate: '25%' });
+        breakdown.push({ label: '> 24L', amount: (taxable - 2400000) * 0.30, rate: '30%' });
     }
 
-    // 87A Rebate check
-    if (taxable <= 700000) {
+    // 87A Rebate check (Strict limit: Taxable <= 12,00,000)
+    let rebate = 0;
+    if (taxable <= 1200000) {
+        rebate = tax;
         tax = 0;
     }
 
@@ -57,8 +99,11 @@ export const calculateNewRegime = (income: number): TaxResult => {
         tax: tax,
         cess: cess,
         totalTax: tax + cess,
-        inHandAnnual: 0, // Calculated later based on CTC - Deductions - Tax
-        inHandMonthly: 0
+        inHandAnnual: 0, // Calculated later
+        inHandMonthly: 0,
+        breakdown: breakdown,
+        rebate: rebate,
+        standardDeduction: standardDeduction
     };
 };
 
