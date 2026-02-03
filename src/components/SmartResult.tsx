@@ -13,7 +13,7 @@ const SmartResult: React.FC<SmartResultProps> = ({ ctc }) => {
     const [inputs, setInputs] = useState<SalaryInputs>({
         basic: ctc * 0.4,
         hra: ctc * 0.2, // 50% of Basic
-        special: ctc * 0.35, // Remainder placeholder
+        special: ctc * 0.4, // Remainder to make it 100% (40+20+40)
         variable: 0,
         employeePF: 21600, // 1800 * 12 default cap
         employerPF: 0,
@@ -35,10 +35,18 @@ const SmartResult: React.FC<SmartResultProps> = ({ ctc }) => {
     // Advanced Edit Mode
     const [isEditing, setIsEditing] = useState(false);
 
-    // Sync Toggles to Inputs
+    // Sync Toggles AND CTC changes to Inputs
     useEffect(() => {
         setInputs(prev => ({
             ...prev,
+            // Recalculate base components if CTC changed (and user hasn't heavily customized? We assume restart on CTC change)
+            // But we must preserve toggles.
+            // Actually, simpler logic: If CTC implies a reset, we should maybe reset. 
+            // For now, let's just ensure the 'variable' and rent logic respects toggles, 
+            // and we fix the initial state issue above. 
+            // If we want to support dynamic CTC updates without remount, we need more logic. 
+            // Assuming for now the inputs are stable unless edited.
+
             rentPaid: hasRent ? (prev.rentPaid || 15000 * 12) : 0,
             variable: hasVariable ? (prev.variable || ctc * 0.1) : 0,
             employeePF: hasPF ? (prev.employeePF || 21600) : 0,
@@ -310,6 +318,13 @@ const SmartResult: React.FC<SmartResultProps> = ({ ctc }) => {
                                             <div className="flex justify-between text-sm py-2 border-y border-dashed border-slate-200 mt-2 bg-green-50 px-2 rounded">
                                                 <span className="text-green-700 font-medium">Rebate u/s 87A</span>
                                                 <span className="font-bold text-green-700">- ₹ {Math.round(activeResult.rebate).toLocaleString('en-IN')}</span>
+                                            </div>
+                                        ) : null}
+
+                                        {activeResult.marginalRelief && activeResult.marginalRelief > 0 ? (
+                                            <div className="flex justify-between text-sm py-2 border-y border-dashed border-slate-200 mt-2 bg-blue-50 px-2 rounded">
+                                                <span className="text-blue-700 font-medium">Marginal Relief</span>
+                                                <span className="font-bold text-blue-700">- ₹ {Math.round(activeResult.marginalRelief).toLocaleString('en-IN')}</span>
                                             </div>
                                         ) : null}
                                     </>

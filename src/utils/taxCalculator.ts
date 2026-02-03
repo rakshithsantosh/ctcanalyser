@@ -20,6 +20,7 @@ export interface TaxResult {
     inHandMonthly: number;
     breakdown?: { label: string; amount: number; rate: string }[];
     rebate?: number;
+    marginalRelief?: number;
     standardDeduction?: number;
 }
 
@@ -88,9 +89,20 @@ export const calculateNewRegime = (income: number): TaxResult => {
 
     // 87A Rebate check (Strict limit: Taxable <= 12,00,000)
     let rebate = 0;
+    let marginalRelief = 0;
+
     if (taxable <= 1200000) {
         rebate = tax;
         tax = 0;
+    } else {
+        // Marginal Relief Check
+        // If taxable income > 12L, tax payable should not exceed (Taxable Income - 12L).
+        // This is applicable because usually tax jumps from 0 to ~60k+ immediately after 12L.
+        const excessIncome = taxable - 1200000;
+        if (tax > excessIncome) {
+            marginalRelief = tax - excessIncome;
+            tax = excessIncome; // The tax is capped at the excess income amount
+        }
     }
 
     const cess = tax * 0.04;
@@ -103,6 +115,7 @@ export const calculateNewRegime = (income: number): TaxResult => {
         inHandMonthly: 0,
         breakdown: breakdown,
         rebate: rebate,
+        marginalRelief: marginalRelief,
         standardDeduction: standardDeduction
     };
 };
