@@ -1,73 +1,36 @@
-# React + TypeScript + Vite
+# Indian Payslip / CTC Analyzer 🇮🇳
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Instant, Privacy-First Salary & Tax Calculator (FY 2025-26 Ready)**
 
-Currently, two official plugins are available:
+This application helps Indian professionals instantly calculate their in-hand salary from their Cost to Company (CTC). It is fully updated with the **Proposed FY 2025-26 Tax Rules**, ensuring accurate tax planning.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Key Features
 
-## React Compiler
+### 1. Smart Tax Logic (FY 2025-26 Proposed)
+*   **Updated Tax Slabs**: Supports the new 5-slab structure (0-4L, 4-8L, 8-12L, etc.).
+*   **Standard Deduction**: Updated to **₹75,000**.
+*   **Rebate u/s 87A**: Complete tax rebate for Taxable Income up to ₹12 Lakhs (effectively **₹12.75L Gross** is Tax-Free).
+*   **Marginal Relief**: Smart logic to cap tax for income slightly above ₹12L, ensuring you don't pay more tax than the extra income earned.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 2. Detailed Breakdown
+*   **Transparent Calculation**: See exactly how your tax is computed—slab by slab.
+*   **Component Analysis**: Breaks down CTC into Basic, HRA, Special Allowance, and PF.
+*   **Regime Comparison**: Instantly compares Old vs New Regime to show you the best option.
 
-## Expanding the ESLint configuration
+### 3. User-Centric Design
+*   **Instant Results**: No signup required. Just enter one number (CTC) to get started.
+*   **Smart Allocation**: Automatically balances salary components to match 100% of your CTC.
+*   **Privacy First**: 100% Client-side. Your salary data never leaves your browser.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🛠️ Tech Stack
+*   **Frontend**: React, TypeScript, Vite
+*   **Styling**: TailwindCSS
+*   **Logic**: Custom Typescript Utilities for Indian Tax Law
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 📝 Usage
+1.  Enter your **CTC** (e.g., 12,75,000).
+2.  Toggle between **New Regime** and **Old Regime**.
+3.  Expand **"Tax Calculation Breakdown"** to see the math.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
+*Disclaimer: Calculations are indicative and based on proposed FY 2025-26 budget rules. Please consult a qualified CA for official tax filing.*
